@@ -20,7 +20,17 @@
             "email": "e23369@eng.pdn.ac.lk",
             "eNumber":"E/23/369"
     ],
-{   
+    "supervisors": [
+    {
+      "name": "Dr. Supervisor 1",
+      "email": "email@eng.pdn.ac.lk"
+    },
+    {
+      "name": "Supervisor 2",
+      "email": "email@eng.pdn.ac.lk"
+    }
+  ],
+  
     "tags": ["Web", "Software Systems", "CO2060"],
     "image":"cover_page.jpg",
     "thumbnail":"thumbnail.jpg"
