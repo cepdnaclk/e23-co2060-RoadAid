@@ -1,26 +1,29 @@
 {
-    "team": [
-        {
-            "name": "Chanuka Dissanayake",
-            "email": "e23084@eng.pdn.ac.lk",
-            "eNumber": "E/23/084"
-        },
-        {
-            "name": "Athif Nular",
-            "email": "e23249@eng.pdn.ac.lk",
-            "eNumber": "E/23/249"
-        },
-        {
-            "name": "Shanilka Asen",
-            "email": "e23021@eng.pdn.ac.lk",
-            "eNumber": "E/23/021"
-        },
-        {
-            "name": "Anupa Senevirathne",
-            "email": "e23369@eng.pdn.ac.lk",
-            "eNumber":"E/23/369"
-    ],
-    "supervisors": [
+  "title": "RoadAid",
+  "team": [
+    {
+      "name": "Athif Nular",
+      "email": "e23249@eng.pdn.ac.lk",
+      "eNumber": "E/23/249"
+    },
+    {
+      "name": "Shanilka Asen",
+      "email": "e23021@eng.pdn.ac.lk",
+      "eNumber": "E/23/021"
+    },
+    {
+      "name": "Chanuka Dissanayake",
+      "email": "e23084@eng.pdn.ac.lk",
+      "eNumber": "E/23/084"
+    },
+    {
+      "name": "Anupa Senevirathne",
+      "email": "e23369@eng.pdn.ac.lk",
+      "eNumber": "E/23/369"
+    },
+      
+  ],
+  "supervisors": [
     {
       "name": "Dr. Supervisor 1",
       "email": "email@eng.pdn.ac.lk"
@@ -30,8 +33,5 @@
       "email": "email@eng.pdn.ac.lk"
     }
   ],
-  
-    "tags": ["Web", "Software Systems", "CO2060"],
-    "image":"cover_page.jpg",
-    "thumbnail":"thumbnail.jpg"
+  "tags": ["Web", "Software Systems", "CO2060"]
 }
