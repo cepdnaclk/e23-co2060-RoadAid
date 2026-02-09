@@ -6,26 +6,21 @@
             "eNumber": "E/23/084"
         },
         {
-            "name": "Team Member Name 2",
-            "email": "email@eng.pdn.ac.lk",
-            "eNumber": "E/yy/xxx"
+            "name": "Athif Nular",
+            "email": "e23249@eng.pdn.ac.lk",
+            "eNumber": "E/23/249"
         },
         {
-            "name": "Team Member Name 3",
-            "email": "email@eng.pdn.ac.lk",
-            "eNumber": "E/yy/xxx"
-        }
-    ],
-    "supervisors": [
-        {
-            "name": "Dr. Supervisor 1",
-            "email": "email@eng.pdn.ac.lk"
+            "name": "Shanilka Asen",
+            "email": "e23021@eng.pdn.ac.lk",
+            "eNumber": "E/23/021"
         },
         {
-            "name": "Supervisor 2",
-            "email": "email@eng.pdn.ac.lk"
-        }
+            "name": "Anupa Senevirathne",
+            "email": "e23369@eng.pdn.ac.lk",
+            "eNumber":"E/23/369"
     ],
+    {
     "tags": ["Web", "Software Systems", "CO2060"],
     "image":"cover_page.jpg",
     "thumbnail":"thumbnail.jpg"
