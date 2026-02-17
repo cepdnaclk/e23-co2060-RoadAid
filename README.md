@@ -15,8 +15,8 @@ RoadAid is a comprehensive vehicle assistance platform designed for drivers faci
 ## Tech Stack
 
 - **Frontend:** React.js  
-- **Backend:** Node.js / Express  
-- **Database:** MongoDB  
+- **Backend:**  Python/ Django  
+- **Database:** SQLITEDB  
 - **Maps & Location Services:** Google Maps API / Geolocation API  
 
 ## Installation
