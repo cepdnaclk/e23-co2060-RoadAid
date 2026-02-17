@@ -43,3 +43,29 @@ document.addEventListener('click', (e) => {
     resultsList.style.display = 'none';
   }
 });
+
+
+const locateBtn = document.querySelector('.locate-btn');
+
+locateBtn.addEventListener('click', () => {
+    if (navigator.geolocation) {
+        // Change icon to show it's loading
+        locateBtn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i>';
+        
+        navigator.geolocation.getCurrentPosition(
+            (position) => {
+                const lat = position.coords.latitude;
+                const lng = position.coords.longitude;
+                // Here you would normally send this to your backend or fill a form
+                alert(`Location Found! \nLat: ${lat} \nLng: ${lng}`);
+                locateBtn.innerHTML = '<i class="fa-solid fa-check"></i>'; // Success icon
+            },
+            (error) => {
+                alert("Unable to retrieve your location.");
+                locateBtn.innerHTML = '<i class="fa-solid fa-location-crosshairs"></i>'; // Reset icon
+            }
+        );
+    } else {
+        alert("Geolocation is not supported by this browser.");
+    }
+});

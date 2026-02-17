@@ -54,7 +54,7 @@ body {
 }
 
 .logo span {
-    color: #2c73d2; /* Blue accent for 'SERVICE' */
+    color: #eba83c; /* Blue accent for 'SERVICE' */
 }
 
 .call-btn {
@@ -204,27 +204,37 @@ body {
     background-color: #f0f8ff; /* Light blue hover effect */
     color: #2c73d2;
 }
+/* Ensure the container centers its content */
 .desc1 {
-    color: #fff;
-    font-size: 18px;
+    text-align: center; /* Centers text and the button inside */
     margin-top: 20px;
-    line-height: 1.6;
-    text-align: center;
+    padding: 20px;
 }
-.desc1 p {
-     margin-top: 10px;  
+
+.locate-btn {
+    /* Layout */
+    display: inline-flex;       /* Allows button to hug content width */
+    align-items: center;        /* Vertically centers icon and text */
+    justify-content: center;
+    gap: 10px;                  /* Space between icon and text */
+    margin-top: 15px;           /* Space between text and button */
+
+    /* Shape & Size */
+    padding: 12px 24px;         /* Nice rectangular padding */
+    border-radius: 8px;         /* Rounded corners, but NOT a circle */
+    border: none;
+
+    /* Colors */
+    background-color: #e74c3c;  /* Red to match "Emergency" theme */
+    color: white;               /* White text */
+    
+    /* Text Style */
+    font-size: 16px;
+    font-weight: bold;
+    cursor: pointer;
+    transition: background 0.3s;
 }
-.image1 {
-   display: block;
-    width: 100%;       /* Allows it to be responsive */
-    max-width: 1000px;  /* Set a reasonable size */
-    height: 400px;      /* Keeps the image from looking squashed */
-    margin: auto ; /* Centers the image */
-    border: 2px solid rgb(57, 9, 161); /* Optional: adds a border so you can see the box */
-    width: 1000px;
-    opacity: 0.5;
-    transition: opacity 0.3s ease;
-}
-.image1:hover {
-    opacity: 1.0;
+
+.locate-btn:hover {
+    background-color: #c0392b; /* Darker red on hover */
 }
