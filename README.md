@@ -17,7 +17,15 @@ RoadAid is a comprehensive vehicle assistance platform designed for drivers faci
 - **Frontend:** React.js  
 - **Backend:**  Python/ Django  
 - **Database:** SQLITEDB  
-- **Maps & Location Services:** Google Maps API / Geolocation API  
+- **Maps & Location Services:** Google Maps API / Geolocation API
+
+## Team
+
+- **D.R.C.V.DISSANAYAKE** –Product Owner – e23084@eng.pdn.ac.lk  
+- **M.M.M.A.NULAR** –Team Leader  – e23249@eng.pdn.ac.lk  
+- **H.A.K.SENEVIRATHNE** –Project Collaborator  – e23369@eng.pdn.ac.lk  
+- **T.W.S.ASEN** –Project Collaborator  – e23021@eng.pdn.ac.lk  
+
 
 ## Installation
 
