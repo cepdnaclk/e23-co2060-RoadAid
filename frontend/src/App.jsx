@@ -1,7 +1,13 @@
 import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
+import Home from "./pages/Home";
 import Login from "./pages/Login";
+import CustomerSignup from "./pages/CustomerSignup";
+import MechanicSignup from "./pages/MechanicSignup";
+import ForgotPassword from "./pages/ForgotPassword";
 import CustomerDashboard from "./pages/CustomerDashboard";
 import MechanicDashboard from "./pages/MechanicDashboard";
+import CustomerHistory from "./pages/CustomerHistory";
+import MechanicHistory from "./pages/MechanicHistory";
 import { getAuth } from "./auth";
 
 function RequireRole({ role, children }) {
@@ -15,13 +21,26 @@ export default function App() {
   return (
     <BrowserRouter>
       <Routes>
+        <Route path="/" element={<Home />} />
         <Route path="/login" element={<Login />} />
+        <Route path="/signup/customer" element={<CustomerSignup />} />
+        <Route path="/signup/mechanic" element={<MechanicSignup />} />
+        <Route path="/forgot-password" element={<ForgotPassword />} />
 
         <Route
           path="/customer"
           element={
             <RequireRole role="customer">
               <CustomerDashboard />
+            </RequireRole>
+          }
+        />
+
+        <Route
+          path="/customer/history"
+          element={
+            <RequireRole role="customer">
+              <CustomerHistory />
             </RequireRole>
           }
         />
@@ -35,7 +54,16 @@ export default function App() {
           }
         />
 
-        <Route path="*" element={<Navigate to="/login" replace />} />
+        <Route
+          path="/mechanic/history"
+          element={
+            <RequireRole role="mechanic">
+              <MechanicHistory />
+            </RequireRole>
+          }
+        />
+
+        <Route path="*" element={<Navigate to="/" replace />} />
       </Routes>
     </BrowserRouter>
   );

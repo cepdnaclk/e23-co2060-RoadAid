@@ -1,108 +1,138 @@
 import { useState } from "react";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, Link } from "react-router-dom";
 import { api } from "../api";
 import { saveAuth } from "../auth";
 
+function getApiErrorMessage(error, fallback) {
+  const data = error?.response?.data;
+
+  if (typeof data === "string" && data.trim()) return data;
+  if (typeof data?.detail === "string" && data.detail.trim()) return data.detail;
+
+  if (Array.isArray(data?.non_field_errors) && data.non_field_errors.length) {
+    return data.non_field_errors.join(" ");
+  }
+
+  if (data && typeof data === "object") {
+    for (const value of Object.values(data)) {
+      if (typeof value === "string" && value.trim()) return value;
+      if (Array.isArray(value) && value.length) return value.join(" ");
+    }
+  }
+
+  return fallback;
+}
+
 export default function Login() {
   const nav = useNavigate();
-  const [username, setUsername] = useState("customer001");
-  const [password, setPassword] = useState("12345678");
+
+  const [username, setUsername] = useState("");
+  const [password, setPassword] = useState("");
+  const [rememberMe, setRememberMe] = useState(true);
   const [err, setErr] = useState("");
 
-  async function handleLogin() {
+  async function handleLogin(e) {
+    e.preventDefault();
     setErr("");
+
     try {
       const res = await api.post("/api/login/", { username, password });
-      const token = res.data.access;
 
-      // decode JWT payload -> user_id
-      const payload = JSON.parse(atob(token.split(".")[1]));
-      const userId = payload.user_id;
+      saveAuth({
+        access: res.data.access,
+        refresh: res.data.refresh,
+        user: res.data.user,
+        rememberMe,
+      });
 
-      // Save temporarily, then detect role by trying mechanic-only endpoint
-      saveAuth({ token, role: "unknown", userId, username });
-
-      try {
-        await api.get("/requests/pending/?radius=1"); // mechanic-only
-        saveAuth({ token, role: "mechanic", userId, username });
+      if (res.data.user.role === "mechanic") {
         nav("/mechanic");
-      } catch {
-        saveAuth({ token, role: "customer", userId, username });
+      } else {
         nav("/customer");
       }
-    } catch {
-      setErr("Login failed. Check username/password.");
+    } catch (error) {
+      setErr(
+        getApiErrorMessage(
+          error,
+          "Login failed. Check username and password."
+        )
+      );
     }
   }
 
   return (
-    <div className="page">
-      <div className="shell">
-        {/* Centered brand */}
-        <div style={{ display: "flex", justifyContent: "center", marginBottom: 16 }}>
-          <div className="brand">
-            <div className="logo" />
-            <div className="brandText">
-              <h1>RoadAid</h1>
-              <p>Smart roadside assistance • MVP</p>
-            </div>
-          </div>
+    <div className="simpleAuthPage">
+      <div className="simpleAuthWrap">
+        <div className="simpleAuthBrand">
+          <h1>RoadAid</h1>
+          <p>Smart roadside assistance</p>
         </div>
 
-        {/* Centered card */}
-        <div style={{ display: "flex", justifyContent: "center" }}>
-          <div className="card" style={{ width: "100%", maxWidth: 520 }}>
-            <div className="cardHeader">
-              <h2>Sign in</h2>
-              <span className="pill">Customer / Mechanic</span>
-            </div>
+        <div className="simpleAuthCard">
+          <div className="simpleAuthHeader">
+            <h2>Welcome back</h2>
+            <span className="pill">Customer / Mechanic</span>
+          </div>
 
-            <div className="cardBody">
-              <div className="section">
-                <p className="label">Username</p>
+          <div className="simpleAuthBody">
+            <form onSubmit={handleLogin} className="simpleAuthForm">
+              <div className="simpleAuthField">
+                <label>Username</label>
                 <input
                   className="input inputWide"
                   value={username}
                   onChange={(e) => setUsername(e.target.value)}
-                  placeholder="e.g. customer001"
+                  placeholder="Enter username"
+                  required
                 />
               </div>
 
-              <div className="section">
-                <p className="label">Password</p>
+              <div className="simpleAuthField">
+                <label>Password</label>
                 <input
                   className="input inputWide"
+                  type="password"
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}
-                  placeholder="••••••••"
-                  type="password"
+                  placeholder="Enter password"
+                  required
                 />
               </div>
 
-              <div className="section">
-                <button
-                  className="btn btnPrimary"
-                  style={{ width: "100%" }}
-                  onClick={handleLogin}
-                >
-                  Login
-                </button>
+              <div className="simpleAuthOptions">
+                <label className="rememberCheck">
+                  <input
+                    type="checkbox"
+                    checked={rememberMe}
+                    onChange={(e) => setRememberMe(e.target.checked)}
+                  />
+                  <span>Remember me</span>
+                </label>
 
-                {err && (
-                  <p className="hint" style={{ marginTop: 10 }}>
-                    {err}
-                  </p>
-                )}
-
-                <p className="hint">
-                  Demo accounts: <b>customer001</b> / 12345678 •{" "}
-                  <b>mechanic_02</b> / 12345678
-                </p>
+                <Link to="/forgot-password" className="authTextLink">
+                  Forgot password?
+                </Link>
               </div>
-            </div>
+
+              {err && <div className="alertBox alertError">{err}</div>}
+
+              <button type="submit" className="authPrimaryBtn">
+                Sign in
+              </button>
+
+              <div className="simpleAuthBottom">
+                Don&apos;t have an account?{" "}
+                <Link to="/signup/customer" className="authTextLink">
+                  Customer signup
+                </Link>{" "}
+                /{" "}
+                <Link to="/signup/mechanic" className="authTextLink">
+                  Mechanic signup
+                </Link>
+              </div>
+            </form>
           </div>
         </div>
-
       </div>
     </div>
   );

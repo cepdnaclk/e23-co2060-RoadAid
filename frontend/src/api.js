@@ -2,7 +2,7 @@ import axios from "axios";
 import { getAuth } from "./auth";
 
 export const api = axios.create({
-  baseURL: "https://athifnular7.pythonanywhere.com",
+  baseURL: import.meta.env.VITE_API_BASE_URL,
 });
 
 api.interceptors.request.use((config) => {
