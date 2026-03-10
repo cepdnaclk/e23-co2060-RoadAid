@@ -12,10 +12,11 @@ class MeSerializer(serializers.ModelSerializer):
             "id",
             "username",
             "email",
-            "full_name",
-            "phone",
+            "first_name",
+            "last_name",
             "role",
-            "approval_status",
+            "latitude",
+            "longitude",
         ]
 
 
@@ -24,7 +25,7 @@ class CustomerRegisterSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = User
-        fields = ["username", "password", "email", "full_name", "phone"]
+        fields = ["username", "password", "email", "first_name", "last_name"]
 
     def validate_username(self, value):
         if User.objects.filter(username=value).exists():
@@ -36,10 +37,9 @@ class CustomerRegisterSerializer(serializers.ModelSerializer):
             username=validated_data["username"],
             password=validated_data["password"],
             email=validated_data.get("email", ""),
-            full_name=validated_data.get("full_name", ""),
-            phone=validated_data.get("phone", ""),
+            first_name=validated_data.get("first_name", ""),
+            last_name=validated_data.get("last_name", ""),
             role="customer",
-            approval_status="approved",
         )
         return user
 
@@ -50,7 +50,7 @@ class MechanicRegisterSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = User
-        fields = ["username", "password", "email", "full_name", "phone", "skills"]
+        fields = ["username", "password", "email", "first_name", "last_name", "skills"]
 
     def validate_username(self, value):
         if User.objects.filter(username=value).exists():
@@ -64,10 +64,9 @@ class MechanicRegisterSerializer(serializers.ModelSerializer):
             username=validated_data["username"],
             password=validated_data["password"],
             email=validated_data.get("email", ""),
-            full_name=validated_data.get("full_name", ""),
-            phone=validated_data.get("phone", ""),
+            first_name=validated_data.get("first_name", ""),
+            last_name=validated_data.get("last_name", ""),
             role="mechanic",
-            approval_status="pending",
         )
 
         MechanicProfile.objects.create(
@@ -82,10 +81,9 @@ class MechanicRegisterSerializer(serializers.ModelSerializer):
             "id": instance.id,
             "username": instance.username,
             "email": instance.email,
-            "full_name": instance.full_name,
-            "phone": instance.phone,
+            "first_name": instance.first_name,
+            "last_name": instance.last_name,
             "role": instance.role,
-            "approval_status": instance.approval_status,
         }
 
 
@@ -94,18 +92,10 @@ class RoadAidTokenObtainPairSerializer(TokenObtainPairSerializer):
     def get_token(cls, user):
         token = super().get_token(user)
         token["role"] = user.role
-        token["approval_status"] = user.approval_status
         return token
 
     def validate(self, attrs):
         data = super().validate(attrs)
-
         user = self.user
-
-        if user.role == "mechanic" and user.approval_status != "approved":
-            raise serializers.ValidationError(
-                {"detail": "Your mechanic account is pending approval."}
-            )
-
         data["user"] = MeSerializer(user).data
         return data
