@@ -20,6 +20,29 @@ class MeSerializer(serializers.ModelSerializer):
         ]
 
 
+class RegisterSerializer(serializers.ModelSerializer):
+    password = serializers.CharField(write_only=True, min_length=8)
+
+    class Meta:
+        model = User
+        fields = ["username", "password", "email", "first_name", "last_name", "role"]
+
+    def validate_username(self, value):
+        if User.objects.filter(username=value).exists():
+            raise serializers.ValidationError("Username already exists.")
+        return value
+
+    def create(self, validated_data):
+        return User.objects.create_user(
+            username=validated_data["username"],
+            password=validated_data["password"],
+            email=validated_data.get("email", ""),
+            first_name=validated_data.get("first_name", ""),
+            last_name=validated_data.get("last_name", ""),
+            role=validated_data.get("role", "customer"),
+        )
+
+
 class CustomerRegisterSerializer(serializers.ModelSerializer):
     password = serializers.CharField(write_only=True, min_length=8)
 
@@ -33,7 +56,7 @@ class CustomerRegisterSerializer(serializers.ModelSerializer):
         return value
 
     def create(self, validated_data):
-        user = User.objects.create_user(
+        return User.objects.create_user(
             username=validated_data["username"],
             password=validated_data["password"],
             email=validated_data.get("email", ""),
@@ -41,7 +64,6 @@ class CustomerRegisterSerializer(serializers.ModelSerializer):
             last_name=validated_data.get("last_name", ""),
             role="customer",
         )
-        return user
 
 
 class MechanicRegisterSerializer(serializers.ModelSerializer):
@@ -73,7 +95,6 @@ class MechanicRegisterSerializer(serializers.ModelSerializer):
             user=user,
             skills=skills,
         )
-
         return user
 
     def to_representation(self, instance):
@@ -96,6 +117,5 @@ class RoadAidTokenObtainPairSerializer(TokenObtainPairSerializer):
 
     def validate(self, attrs):
         data = super().validate(attrs)
-        user = self.user
-        data["user"] = MeSerializer(user).data
+        data["user"] = MeSerializer(self.user).data
         return data
