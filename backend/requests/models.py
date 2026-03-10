@@ -5,12 +5,36 @@ from django.conf import settings
 class ServiceRequest(models.Model):
 
     STATUS_CHOICES = (
-    ('pending', 'Pending'),
-    ('accepted', 'Accepted'),
-    ('completed', 'Completed'),
-    ('cancelled', 'Cancelled'),
-    ('rejected', 'Rejected'),
-)
+        ('pending', 'Pending'),
+        ('accepted', 'Accepted'),
+        ('completed', 'Completed'),
+        ('cancelled', 'Cancelled'),
+        ('rejected', 'Rejected'),
+    )
+
+    PROBLEM_TYPE_CHOICES = (
+        ('tyre_puncture', 'Tyre Puncture'),
+        ('battery_dead', 'Battery Dead'),
+        ('engine_overheat', 'Engine Overheat'),
+        ('fuel_empty', 'Fuel Empty'),
+        ('brake_issue', 'Brake Issue'),
+        ('accident', 'Accident'),
+        ('towing', 'Need Towing'),
+        ('locked_out', 'Locked Out'),
+        ('starting_trouble', 'Starting Trouble'),
+        ('oil_leak', 'Oil Leak'),
+        ('other', 'Other'),
+    )
+
+    VEHICLE_TYPE_CHOICES = (
+        ('car', 'Car'),
+        ('van', 'Van'),
+        ('bike', 'Bike'),
+        ('three_wheeler', 'Three Wheeler'),
+        ('bus', 'Bus'),
+        ('lorry', 'Lorry'),
+        ('other', 'Other'),
+    )
 
     customer = models.ForeignKey(
         settings.AUTH_USER_MODEL,
@@ -29,7 +53,25 @@ class ServiceRequest(models.Model):
     latitude = models.FloatField()
     longitude = models.FloatField()
 
-    description = models.TextField()
+    problem_type = models.CharField(
+        max_length=50,
+        choices=PROBLEM_TYPE_CHOICES,
+        default='tyre_puncture'
+    )
+
+    custom_problem = models.CharField(
+        max_length=255,
+        blank=True,
+        default=''
+    )
+
+    vehicle_type = models.CharField(
+        max_length=50,
+        choices=VEHICLE_TYPE_CHOICES,
+        default='car'
+    )
+
+    description = models.TextField(blank=True, default='')
 
     status = models.CharField(
         max_length=20,

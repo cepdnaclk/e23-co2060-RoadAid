@@ -1,15 +1,17 @@
 import math
-from mechanics.models import MechanicProfile
+
 from django.db import transaction
+from django.db.models import Avg
 from rest_framework import generics, permissions, status
+from rest_framework.exceptions import NotFound, PermissionDenied, ValidationError
 from rest_framework.response import Response
 from rest_framework.views import APIView
-from rest_framework.exceptions import PermissionDenied, NotFound
+
+from mechanics.models import MechanicProfile
 
 from .models import ServiceRequest
 from .serializers import ServiceRequestCreateSerializer, ServiceRequestSerializer
 
-from django.db.models import Avg
 
 def require_role(user, role):
     if getattr(user, "role", None) != role:
@@ -34,6 +36,15 @@ class CreateServiceRequestView(generics.CreateAPIView):
 
     def perform_create(self, serializer):
         require_role(self.request.user, "customer")
+
+        existing_active = ServiceRequest.objects.filter(
+            customer=self.request.user,
+            status__in=["pending", "accepted"]
+        ).exists()
+
+        if existing_active:
+            raise ValidationError({"detail": "You already have an active request."})
+
         serializer.save(customer=self.request.user)
 
 
@@ -47,7 +58,7 @@ class MyRequestsView(generics.ListAPIView):
         return ServiceRequest.objects.filter(customer=self.request.user).order_by("-created_at")
 
 
-# 3) Mechanic views pending requests
+
 # 3) Mechanic views pending requests
 class PendingRequestsView(generics.ListAPIView):
     serializer_class = ServiceRequestSerializer
@@ -56,13 +67,13 @@ class PendingRequestsView(generics.ListAPIView):
     def get_queryset(self):
         require_role(self.request.user, "mechanic")
 
+        pending = ServiceRequest.objects.filter(status="pending").order_by("-created_at")
+
         profile = MechanicProfile.objects.filter(user=self.request.user).first()
         if not profile or profile.latitude is None or profile.longitude is None:
-            return ServiceRequest.objects.none()
+            return pending
 
-        radius_km = float(self.request.query_params.get("radius", 10))  # default 10km
-
-        pending = ServiceRequest.objects.filter(status="pending").order_by("-created_at")
+        radius_km = float(self.request.query_params.get("radius", 50))
 
         nearby_ids = []
         for r in pending:
@@ -71,7 +82,6 @@ class PendingRequestsView(generics.ListAPIView):
                 nearby_ids.append(r.id)
 
         return ServiceRequest.objects.filter(id__in=nearby_ids).order_by("-created_at")
-
 
 # 4) Mechanic accepts a request
 class AcceptRequestView(APIView):
@@ -166,7 +176,6 @@ class RejectRequestView(APIView):
         return Response(ServiceRequestSerializer(sr).data, status=200)
  
  
-# 8) Rate a request 
 # 8) Rate a request
 class RateRequestView(APIView):
     permission_classes = [permissions.IsAuthenticated]
@@ -188,16 +197,19 @@ class RateRequestView(APIView):
         if sr.mechanic is None:
             return Response({"detail": "No mechanic assigned."}, status=400)
 
+        if sr.rating is not None:
+            return Response({"detail": "You have already rated this request."}, status=400)
+
         # rating (0–5) + optional comment
         try:
-            rating = int(request.data.get("rating", 0))
+            rating = int(request.data.get("rating"))
         except Exception:
             return Response({"detail": "Rating must be an integer."}, status=400)
 
         comment = (request.data.get("comment") or "").strip()
 
-        if rating < 0 or rating > 5:
-            return Response({"detail": "Rating must be between 0 and 5."}, status=400)
+        if rating < 1 or rating > 5:
+            return Response({"detail": "Rating must be between 1 and 5."}, status=400)
 
         sr.rating = rating
         sr.review_comment = comment
@@ -235,11 +247,11 @@ class MyActiveRequestView(APIView):
         )
 
         if not sr:
-            return Response({"detail": "No active request."}, status=404)
+            return Response(None, status=200)
 
         return Response(ServiceRequestSerializer(sr).data, status=200)
-
-
+    
+    
 # 10) view active mechanic job
 class MechanicActiveJobView(APIView):
     """
@@ -259,6 +271,99 @@ class MechanicActiveJobView(APIView):
         )
 
         if not sr:
-            return Response({"detail": "No active job."}, status=404)
+            return Response(None, status=200)
 
         return Response(ServiceRequestSerializer(sr).data, status=200)
+
+
+# 11) View request history
+class MyRequestHistoryView(APIView):
+    """
+    GET /requests/my/history/
+    Customer gets completed / cancelled / rejected requests.
+    """
+    permission_classes = [permissions.IsAuthenticated]
+
+    def get(self, request):
+        require_role(request.user, "customer")
+
+        qs = (
+            ServiceRequest.objects
+            .filter(
+                customer=request.user,
+                status__in=["completed", "cancelled", "rejected"]
+            )
+            .order_by("-created_at")
+        )
+
+        return Response(ServiceRequestSerializer(qs, many=True).data, status=200)
+    
+ # 12) Mechanic view history
+class MechanicRequestHistoryView(APIView):
+    """
+    GET /requests/me/history/
+    Mechanic gets completed / cancelled / rejected jobs.
+    """
+    permission_classes = [permissions.IsAuthenticated]
+
+    def get(self, request):
+        require_role(request.user, "mechanic")
+
+        qs = (
+            ServiceRequest.objects
+            .filter(
+                mechanic=request.user,
+                status__in=["completed", "cancelled", "rejected"]
+            )
+            .order_by("-created_at")
+        )
+
+        return Response(ServiceRequestSerializer(qs, many=True).data, status=200)
+
+
+# 13) Tracking view for distance 
+class MyTrackingInfoView(APIView):
+    """
+    GET /requests/my/tracking/
+    Customer gets current mechanic distance + rough ETA for accepted request.
+    """
+    permission_classes = [permissions.IsAuthenticated]
+
+    def get(self, request):
+        require_role(request.user, "customer")
+
+        sr = (
+            ServiceRequest.objects
+            .filter(customer=request.user, status="accepted", mechanic__isnull=False)
+            .order_by("-created_at")
+            .first()
+        )
+
+        if not sr:
+            return Response(None, status=200)
+
+        profile = MechanicProfile.objects.filter(user=sr.mechanic).first()
+        if not profile or profile.latitude is None or profile.longitude is None:
+            return Response(None, status=200)
+
+        distance_km = haversine_km(
+            sr.latitude,
+            sr.longitude,
+            profile.latitude,
+            profile.longitude,
+        )
+
+        avg_speed_kmph = 30.0
+        eta_minutes = max(1, round((distance_km / avg_speed_kmph) * 60))
+
+        return Response({
+            "request_id": sr.id,
+            "customer_latitude": sr.latitude,
+            "customer_longitude": sr.longitude,
+            "mechanic_latitude": profile.latitude,
+            "mechanic_longitude": profile.longitude,
+            "distance_km": round(distance_km, 2),
+            "eta_minutes": eta_minutes,
+        }, status=200)        
+
+

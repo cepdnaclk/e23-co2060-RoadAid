@@ -1,5 +1,7 @@
-Django
-djangorestframework
-djangorestframework-simplejwt
-django-cors-headers
-gunicorn
+Django==6.0.2
+djangorestframework==3.16.0
+djangorestframework-simplejwt==5.5.1
+django-cors-headers==4.7.0
+gunicorn==23.0.0
+psycopg[binary]==3.3.3
+python-dotenv==1.0.1

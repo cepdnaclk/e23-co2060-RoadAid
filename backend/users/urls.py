@@ -1,10 +1,16 @@
 from django.urls import path
-from .views import RegisterView, test_protected
-from django.contrib import admin
-from django.urls import path, include
+from .views import (
+    CustomerRegisterView,
+    LoginView,
+    MechanicRegisterView,
+    MeView,
+    test_protected,
+)
 
 urlpatterns = [
-    path('register/', RegisterView.as_view(), name='register'),
-    path('test/', test_protected, name='test_protected'),
-    
+    path("login/", LoginView.as_view(), name="login"),
+    path("register/customer/", CustomerRegisterView.as_view(), name="register-customer"),
+    path("register/mechanic/", MechanicRegisterView.as_view(), name="register-mechanic"),
+    path("me/", MeView.as_view(), name="me"),
+    path("test/", test_protected, name="test_protected"),
 ]
