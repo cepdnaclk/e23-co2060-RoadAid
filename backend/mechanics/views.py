@@ -1,3 +1,5 @@
+"Add mechanic location and profile API views"
+
 from rest_framework import generics, permissions, status
 from rest_framework.exceptions import PermissionDenied, NotFound
 from rest_framework.response import Response
