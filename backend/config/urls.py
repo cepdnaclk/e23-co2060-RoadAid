@@ -1,6 +1,11 @@
 from django.contrib import admin
 from django.urls import path, include
+
 from rest_framework_simplejwt.views import TokenRefreshView
+
+from django.conf import settings  
+from django.conf.urls.static import static
+
 
 urlpatterns = [
     path("admin/", admin.site.urls), # Django built-in admin panel
@@ -9,3 +14,5 @@ urlpatterns = [
     path("mechanics/", include("mechanics.urls")), # routed to mechanics/urls.py
     path("requests/", include("requests.urls")), #routed to requests/urls.py
 ]
+if settings.DEBUG:
+    urlpatterns += static(settings.STATIC_URL, document_root=settings.STATIC_ROOT)

@@ -119,7 +119,8 @@ TIME_ZONE = os.getenv("TIME_ZONE", "Asia/Colombo")
 USE_I18N = True
 USE_TZ = True
 
-STATIC_URL = "static/"
+STATIC_URL = "/static/"
+
 STATIC_ROOT = BASE_DIR / "staticfiles"
 
 AUTH_USER_MODEL = "users.User"
