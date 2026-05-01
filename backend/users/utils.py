@@ -1,6 +1,9 @@
 from math import radians, sin, cos, sqrt, atan2
 
 def distance_km(lat1, lon1, lat2, lon2):
+    """
+    Calculates the shortest distance over the earth's surface between two points.
+    """
     R = 6371  # Earth radius in km
     lat1, lon1, lat2, lon2 = map(radians, [lat1, lon1, lat2, lon2])
     dlat = lat2 - lat1
