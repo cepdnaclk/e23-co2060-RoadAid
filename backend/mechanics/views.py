@@ -31,8 +31,7 @@ class MechanicProfileView(generics.RetrieveUpdateAPIView):
 class UpdateMyLocationView(APIView):
     """
     POST /mechanics/location/
-    Mechanic updates own live location (polling method).
-    Body: {"latitude": 7.25, "longitude": 80.59}
+    Mechanic updates own live location (polling method
     """
     permission_classes = [permissions.IsAuthenticated]
 
