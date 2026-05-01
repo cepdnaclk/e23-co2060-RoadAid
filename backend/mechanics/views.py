@@ -30,8 +30,8 @@ class MechanicProfileView(generics.RetrieveUpdateAPIView):
 
 class UpdateMyLocationView(APIView):
     """
-    POST /mechanics/location/
-    Mechanic updates own live location (polling method
+    Mechanic updates own live location.
+    Only users with role 'mechanic' are allowed.
     """
     permission_classes = [permissions.IsAuthenticated]
 
@@ -62,7 +62,6 @@ class UpdateMyLocationView(APIView):
 
 class GetMechanicLocationView(APIView):
     """
-    GET /mechanics/<mechanic_id>/location/
     Customer reads mechanic location ONLY if customer has an accepted request with that mechanic.
     """
     permission_classes = [permissions.IsAuthenticated]
