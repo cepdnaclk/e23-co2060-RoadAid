@@ -20,7 +20,7 @@ def env_list(name: str, default: str = "") -> list[str]:
 
 
 SECRET_KEY = os.getenv("SECRET_KEY", "dev-only-change-this-secret-key")
-DEBUG = env_bool("DEBUG", False)
+DEBUG = True
 
 ALLOWED_HOSTS = env_list(
     "ALLOWED_HOSTS",
