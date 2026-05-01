@@ -11,6 +11,10 @@ from requests.models import ServiceRequest
 
 
 class MechanicProfileView(generics.RetrieveUpdateAPIView):
+    """
+    API view to retrieve or update the logged-in mechanic's profile.
+    Only users with role 'mechanic' are allowed.
+    """
     serializer_class = MechanicProfileSerializer
     permission_classes = [permissions.IsAuthenticated]
 
