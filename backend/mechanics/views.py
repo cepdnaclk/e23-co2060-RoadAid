@@ -11,6 +11,10 @@ from requests.models import ServiceRequest
 
 
 class MechanicProfileView(generics.RetrieveUpdateAPIView):
+    """
+    API view to retrieve or update the logged-in mechanic's profile.
+    Only users with role 'mechanic' are allowed.
+    """
     serializer_class = MechanicProfileSerializer
     permission_classes = [permissions.IsAuthenticated]
 
@@ -26,9 +30,8 @@ class MechanicProfileView(generics.RetrieveUpdateAPIView):
 
 class UpdateMyLocationView(APIView):
     """
-    POST /mechanics/location/
-    Mechanic updates own live location (polling method).
-    Body: {"latitude": 7.25, "longitude": 80.59}
+    Mechanic updates own live location.
+    Only users with role 'mechanic' are allowed.
     """
     permission_classes = [permissions.IsAuthenticated]
 
@@ -59,7 +62,6 @@ class UpdateMyLocationView(APIView):
 
 class GetMechanicLocationView(APIView):
     """
-    GET /mechanics/<mechanic_id>/location/
     Customer reads mechanic location ONLY if customer has an accepted request with that mechanic.
     """
     permission_classes = [permissions.IsAuthenticated]

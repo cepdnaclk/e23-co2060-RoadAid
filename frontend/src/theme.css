@@ -1211,7 +1211,7 @@ details summary{
 
 .heroTextBlock{
   max-width: 760px;
-  padding: 48px 0 48px 64px;
+  padding: 48px 0;
 }
 
 .heroBadge{
@@ -1599,7 +1599,7 @@ details summary{
 
   .siteNavLinks{
     width: 100%;
-    justify-content: center;
+    justify-content: flex-start;
     order: 3;
   }
 

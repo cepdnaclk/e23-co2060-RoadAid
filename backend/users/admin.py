@@ -5,6 +5,11 @@ from .models import User
 
 @admin.register(User)
 class UserAdmin(BaseUserAdmin):
+    """
+    Customizes the Django Admin interface for the User model.
+    By inheriting from BaseUserAdmin, we keep Django's standard password hashing 
+    and permission management while adding our custom RoadAid fields.
+    """
     list_display = (
         "id",
         "username",

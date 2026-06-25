@@ -18,6 +18,6 @@ class MechanicProfileSerializer(serializers.ModelSerializer): #Serializers to co
     def validate_longitude(self, value): # Custom validation method for longitude
         if value is None: #Allow null values if longitude is not provided 
             return value
-        if not (-180 <= value <= 180): # Ensure that the longitude is within the valid geographical range
+        if not (-180 <= value <= 180): # Ensure that the given longitude is within the valid geographical range
             raise serializers.ValidationError("Longitude must be between -180 and 180.")
         return value
