@@ -14,7 +14,8 @@ export default function Navbar() {
   const role = auth?.role;
 
   function goDashboard() {
-    if (role === "customer") nav("/customer");
+    if (auth?.isStaff || auth?.isSuperuser) nav("/admin");
+    else if (role === "customer") nav("/customer");
     else if (role === "mechanic") nav("/mechanic");
     else nav("/login");
   }

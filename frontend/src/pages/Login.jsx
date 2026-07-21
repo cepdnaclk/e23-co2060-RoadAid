@@ -45,13 +45,14 @@ export default function Login() {
         rememberMe,
       });
 
-      if (res.data.user.role === "mechanic") {
+      // Staff status must take priority over a leftover customer/mechanic role.
+      // Otherwise an administrator can be sent to a normal user dashboard.
+      if (res.data.user.is_staff || res.data.user.is_superuser) {
+        nav("/admin");
+      } else if (res.data.user.role === "mechanic") {
         nav("/mechanic");
       } else if (res.data.user.role === "customer") {
         nav("/customer");
-      } else if (res.data.user.is_staff) {
-        // Staff/admin accounts with no customer or mechanic role fall back to the admin panel.
-        nav("/admin");
       } else {
         nav("/customer");
       }
