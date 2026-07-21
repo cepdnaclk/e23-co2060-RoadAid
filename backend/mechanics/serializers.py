@@ -4,7 +4,6 @@ from requests.models import ServiceRequest
 
 from .models import MechanicProfile
 
-<<<<<<< HEAD
 VALID_SKILLS = [key for key, _ in ServiceRequest.PROBLEM_TYPE_CHOICES]
 VALID_VEHICLE_TYPES = [key for key, _ in ServiceRequest.VEHICLE_TYPE_CHOICES]
 
@@ -25,13 +24,8 @@ class MechanicProfileSerializer(serializers.ModelSerializer):
         required=False,
     )
 
-=======
-class MechanicProfileSerializer(serializers.ModelSerializer): #Serializers to convert MechanicProfile model into JSON & vice versa
->>>>>>> 92ba1d3cdfa6749bba422bab3a3a7ff1ab9a6620
     class Meta:
-        # Specify the model associated with the serializer
         model = MechanicProfile
-<<<<<<< HEAD
         fields = [
             "id",
             "user",
@@ -78,21 +72,14 @@ class MechanicProfileSerializer(serializers.ModelSerializer): #Serializers to co
 
     def validate_latitude(self, value):
         if value is None:
-=======
-        fields = ["id", "user", "skills", "latitude", "longitude", "availability", "rating"] # Fields to be included in the serialized output/input
-        read_only_fields = ["id", "user", "rating"] # Fields that cannot be modified by the user (read-only)
-
-    def validate_latitude(self, value): #Custom validation method for latitude
-        if value is None: #Allow Null values if latitude is not provided
->>>>>>> 92ba1d3cdfa6749bba422bab3a3a7ff1ab9a6620
             return value
-        if not (-90 <= value <= 90):  #Ensure that the latitude is within valid graphical range
+        if not (-90 <= value <= 90):
             raise serializers.ValidationError("Latitude must be between -90 and 90.")
         return value
 
-    def validate_longitude(self, value): # Custom validation method for longitude
-        if value is None: #Allow null values if longitude is not provided 
+    def validate_longitude(self, value):
+        if value is None:
             return value
-        if not (-180 <= value <= 180): # Ensure that the given longitude is within the valid geographical range
+        if not (-180 <= value <= 180):
             raise serializers.ValidationError("Longitude must be between -180 and 180.")
         return value
