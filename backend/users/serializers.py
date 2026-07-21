@@ -2,7 +2,11 @@ from rest_framework import serializers
 from rest_framework_simplejwt.serializers import TokenObtainPairSerializer
 
 from mechanics.models import MechanicProfile
+from requests.models import ServiceRequest
 from .models import User
+
+VALID_SKILLS = [key for key, _ in ServiceRequest.PROBLEM_TYPE_CHOICES]
+VALID_VEHICLE_TYPES = [key for key, _ in ServiceRequest.VEHICLE_TYPE_CHOICES]
 
 
 class MeSerializer(serializers.ModelSerializer):
@@ -18,8 +22,9 @@ class MeSerializer(serializers.ModelSerializer):
             "approval_status",
             "latitude",
             "longitude",
+            "is_staff",
+            "is_superuser",
         ]
-
 
 class RegisterSerializer(serializers.ModelSerializer):
     password = serializers.CharField(write_only=True, min_length=8)
@@ -73,11 +78,25 @@ class CustomerRegisterSerializer(serializers.ModelSerializer):
 
 class MechanicRegisterSerializer(serializers.ModelSerializer):
     password = serializers.CharField(write_only=True, min_length=8)
-    skills = serializers.CharField(write_only=True)
+    # List of ServiceRequest problem-type slugs this mechanic can handle,
+    # e.g. ["tyre_puncture", "battery_dead", "towing"].
+    skills = serializers.ListField(
+        child=serializers.ChoiceField(choices=VALID_SKILLS),
+        write_only=True,
+        allow_empty=False,
+    )
+    # List of vehicle categories this mechanic services, e.g. ["car", "van"].
+    # Like ride-hailing apps matching a driver's vehicle class to a ride
+    # request, this keeps (say) a tuk-tuk mechanic from being shown truck jobs.
+    vehicle_types = serializers.ListField(
+        child=serializers.ChoiceField(choices=VALID_VEHICLE_TYPES),
+        write_only=True,
+        allow_empty=False,
+    )
 
     class Meta:
         model = User
-        fields = ["username", "password", "email", "full_name", "phone", "skills"]
+        fields = ["username", "password", "email", "full_name", "phone", "skills", "vehicle_types"]
 
     def validate_username(self, value):
         if User.objects.filter(username=value).exists():
@@ -85,7 +104,11 @@ class MechanicRegisterSerializer(serializers.ModelSerializer):
         return value
 
     def create(self, validated_data):
-        skills = validated_data.pop("skills", "").strip()
+        skills_list = validated_data.pop("skills", [])
+        skills = ",".join(dict.fromkeys(skills_list))  # de-duplicate, keep order
+
+        vehicle_types_list = validated_data.pop("vehicle_types", [])
+        vehicle_types = ",".join(dict.fromkeys(vehicle_types_list))
 
         user = User.objects.create_user(
             username=validated_data["username"],
@@ -100,6 +123,7 @@ class MechanicRegisterSerializer(serializers.ModelSerializer):
         MechanicProfile.objects.create(
             user=user,
             skills=skills,
+            vehicle_types=vehicle_types,
         )
         return user
 

@@ -12,6 +12,9 @@ from mechanics.models import MechanicProfile
 from .models import ServiceRequest
 from .serializers import ServiceRequestCreateSerializer, ServiceRequestSerializer
 
+VALID_PROBLEM_TYPES = {key for key, _ in ServiceRequest.PROBLEM_TYPE_CHOICES}
+VALID_VEHICLE_TYPES = {key for key, _ in ServiceRequest.VEHICLE_TYPE_CHOICES}
+
 
 def require_role(user, role):
     if getattr(user, "role", None) != role:
@@ -70,6 +73,24 @@ class PendingRequestsView(generics.ListAPIView):
         pending = ServiceRequest.objects.filter(status="pending").order_by("-created_at")
 
         profile = MechanicProfile.objects.filter(user=self.request.user).first()
+
+        # Only show requests the mechanic is actually equipped to handle.
+        # If the mechanic hasn't configured any recognised skills yet (e.g. old
+        # free-text data from before this feature), fall back to showing
+        # everything rather than silently hiding all jobs from them.
+        matched_skills = profile.matched_skills(VALID_PROBLEM_TYPES) if profile else set()
+        if matched_skills:
+            pending = pending.filter(problem_type__in=matched_skills)
+
+        # Same idea for vehicle type - e.g. a tuk-tuk mechanic shouldn't be
+        # shown truck jobs and vice versa. Vehicle types are optional though,
+        # so an unconfigured mechanic still sees requests for every vehicle.
+        matched_vehicle_types = (
+            profile.matched_vehicle_types(VALID_VEHICLE_TYPES) if profile else set()
+        )
+        if matched_vehicle_types:
+            pending = pending.filter(vehicle_type__in=matched_vehicle_types)
+
         if not profile or profile.latitude is None or profile.longitude is None:
             return pending
 
@@ -82,7 +103,7 @@ class PendingRequestsView(generics.ListAPIView):
                 nearby_ids.append(r.id)
 
         return ServiceRequest.objects.filter(id__in=nearby_ids).order_by("-created_at")
-
+       
 # 4) Mechanic accepts a request
 class AcceptRequestView(APIView):
     permission_classes = [permissions.IsAuthenticated]
