@@ -14,6 +14,8 @@ function clearAllStores() {
     "username",
     "approvalStatus",
     "rememberMe",
+    "isStaff",
+    "isSuperuser",
   ];
 
   keys.forEach((key) => {
@@ -34,6 +36,8 @@ export function saveAuth({ access, refresh, user, rememberMe = false }) {
   store.setItem("username", user?.username || "");
   store.setItem("approvalStatus", user?.approval_status || "");
   store.setItem("rememberMe", rememberMe ? "true" : "false");
+  store.setItem("isStaff", user?.is_staff ? "true" : "false");
+  store.setItem("isSuperuser", user?.is_superuser ? "true" : "false");
 }
 
 export function clearAuth() {
@@ -54,5 +58,7 @@ export function getAuth() {
     username: store.getItem("username") || "",
     approvalStatus: store.getItem("approvalStatus") || "",
     rememberMe: store.getItem("rememberMe") === "true",
+    isStaff: store.getItem("isStaff") === "true",
+    isSuperuser: store.getItem("isSuperuser") === "true",
   };
 }

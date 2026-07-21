@@ -106,6 +106,9 @@ export default function MechanicDashboard() {
   const [pageError, setPageError] = useState("");
   const [pageMessage, setPageMessage] = useState("");
 
+  const [skills, setSkills] = useState([]);
+  const [loadingSkills, setLoadingSkills] = useState(false);
+
   function logout() {
     clearAuth();
     nav("/login");
@@ -134,6 +137,18 @@ export default function MechanicDashboard() {
       setActive(null);
     } finally {
       setLoadingActive(false);
+    }
+  }
+
+  async function loadSkills() {
+    setLoadingSkills(true);
+    try {
+      const res = await api.get("/mechanics/profile/");
+      setSkills(Array.isArray(res.data?.skills) ? res.data.skills : []);
+    } catch {
+      setSkills([]);
+    } finally {
+      setLoadingSkills(false);
     }
   }
 
@@ -258,6 +273,7 @@ export default function MechanicDashboard() {
   useEffect(() => {
     loadPending();
     loadActive();
+    loadSkills();
 
     const t = setInterval(() => {
       loadPending().catch(() => {});
@@ -413,8 +429,9 @@ export default function MechanicDashboard() {
           )}
 
           <div className="mechHintBox" style={{ marginTop: 16 }}>
-            Requests are easier to accept when your location is updated. Keep sharing turned on
-            while travelling so customers can track you after you accept a job.
+            {skills.length > 0
+              ? "You're only shown requests that match your selected skills and are within your radius. Update your skills anytime from Settings."
+              : "Requests are easier to accept when your location is updated. Keep sharing turned on while travelling so customers can track you after you accept a job."}
           </div>
         </div>
       )}

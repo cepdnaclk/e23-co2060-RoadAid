@@ -47,9 +47,15 @@ export default function Login() {
 
       if (res.data.user.role === "mechanic") {
         nav("/mechanic");
+      } else if (res.data.user.role === "customer") {
+        nav("/customer");
+      } else if (res.data.user.is_staff) {
+        // Staff/admin accounts with no customer or mechanic role fall back to the admin panel.
+        nav("/admin");
       } else {
         nav("/customer");
       }
+      
     } catch (error) {
       setErr(
         getApiErrorMessage(
