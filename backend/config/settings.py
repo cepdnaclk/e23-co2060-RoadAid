@@ -20,7 +20,7 @@ def env_list(name: str, default: str = "") -> list[str]:
 
 
 SECRET_KEY = os.getenv("SECRET_KEY", "dev-only-change-this-secret-key")
-DEBUG = env_bool("DEBUG", False)
+DEBUG = True
 
 ALLOWED_HOSTS = env_list(
     "ALLOWED_HOSTS",
@@ -120,7 +120,8 @@ TIME_ZONE = os.getenv("TIME_ZONE", "Asia/Colombo")
 USE_I18N = True
 USE_TZ = True
 
-STATIC_URL = "static/"
+STATIC_URL = "/static/"
+
 STATIC_ROOT = BASE_DIR / "staticfiles"
 
 AUTH_USER_MODEL = "users.User"

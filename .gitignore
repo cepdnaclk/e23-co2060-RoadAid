@@ -1,4 +1,11 @@
 *.pyc
+<<<<<<< HEAD
 __pycache__/
 .DS_Store
 db.sqlite3
+=======
+backend/staticfiles/
+backend.zip
+frontend/node_modules/
+frontend/.env
+>>>>>>> 92ba1d3cdfa6749bba422bab3a3a7ff1ab9a6620

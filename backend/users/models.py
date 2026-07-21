@@ -3,6 +3,9 @@ from django.db import models
 
 
 class User(AbstractUser):
+    """
+    Custom User model extending Django's standard AbstractUser for the RoadAid system.
+    """
     ROLE_CHOICES = (
         ("customer", "Customer"),
         ("mechanic", "Mechanic"),
