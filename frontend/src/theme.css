@@ -1211,7 +1211,7 @@ details summary{
 
 .heroTextBlock{
   max-width: 760px;
-  padding: 48px 0;
+  padding: 48px 0 48px 64px;
 }
 
 .heroBadge{
@@ -1599,7 +1599,7 @@ details summary{
 
   .siteNavLinks{
     width: 100%;
-    justify-content: flex-start;
+    justify-content: center;
     order: 3;
   }
 
@@ -2023,6 +2023,33 @@ details summary{
 
 .authPrimaryBtn:hover {
   background: #1d4ed8;
+}
+
+.authDivider {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  color: #718096;
+  font-size: 13px;
+}
+
+.authDivider::before,
+.authDivider::after {
+  content: "";
+  height: 1px;
+  flex: 1;
+  background: #e2e8f0;
+}
+
+.googleSignIn {
+  min-height: 40px;
+  display: flex;
+  justify-content: center;
+}
+
+.googleSignInLoading {
+  opacity: 0.55;
+  pointer-events: none;
 }
 
 .authTextLink {

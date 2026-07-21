@@ -3,9 +3,6 @@ from django.db import models
 
 
 class User(AbstractUser):
-    """
-    Custom User model extending Django's standard AbstractUser for the RoadAid system.
-    """
     ROLE_CHOICES = (
         ("customer", "Customer"),
         ("mechanic", "Mechanic"),
@@ -25,6 +22,9 @@ class User(AbstractUser):
         choices=APPROVAL_CHOICES,
         default="approved",
     )
+    # Stable Google account identifier (the token's `sub` claim). Email addresses
+    # can change, so they must not be used as the external-account identifier.
+    google_subject = models.CharField(max_length=255, unique=True, null=True, blank=True)
 
     latitude = models.FloatField(null=True, blank=True)
     longitude = models.FloatField(null=True, blank=True)

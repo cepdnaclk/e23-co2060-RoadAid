@@ -158,3 +158,13 @@ class RoadAidTokenObtainPairSerializer(TokenObtainPairSerializer):
 
         data["user"] = MeSerializer(user).data
         return data
+
+
+def build_auth_response(user):
+    """Return the same JWT payload used by password sign-in."""
+    refresh = RoadAidTokenObtainPairSerializer.get_token(user)
+    return {
+        "refresh": str(refresh),
+        "access": str(refresh.access_token),
+        "user": MeSerializer(user).data,
+    }

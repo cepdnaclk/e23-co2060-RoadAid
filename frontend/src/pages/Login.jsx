@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { useNavigate, Link } from "react-router-dom";
 import { api } from "../api";
 import { saveAuth } from "../auth";
@@ -30,6 +30,76 @@ export default function Login() {
   const [password, setPassword] = useState("");
   const [rememberMe, setRememberMe] = useState(true);
   const [err, setErr] = useState("");
+  const [googleLoading, setGoogleLoading] = useState(false);
+  const googleButtonRef = useRef(null);
+  const rememberMeRef = useRef(rememberMe);
+
+  useEffect(() => {
+    rememberMeRef.current = rememberMe;
+  }, [rememberMe]);
+
+  function finishLogin(data) {
+    saveAuth({
+      access: data.access,
+      refresh: data.refresh,
+      user: data.user,
+      rememberMe: rememberMeRef.current,
+    });
+
+    if (data.user.role === "mechanic") nav("/mechanic");
+    else if (data.user.is_staff) nav("/admin");
+    else nav("/customer");
+  }
+
+  useEffect(() => {
+    const clientId = import.meta.env.VITE_GOOGLE_CLIENT_ID;
+    if (!clientId || !googleButtonRef.current) return undefined;
+
+    const initialiseGoogleButton = () => {
+      if (!window.google || !googleButtonRef.current) return;
+      window.google.accounts.id.initialize({
+        client_id: clientId,
+        callback: async ({ credential }) => {
+          setErr("");
+          setGoogleLoading(true);
+          try {
+            const res = await api.post("/api/login/google/", { credential });
+            finishLogin(res.data);
+          } catch (error) {
+            setErr(
+              error?.request && !error?.response
+                ? "Could not reach the RoadAid server. Make sure the Django backend is running, then refresh the page."
+                : getApiErrorMessage(error, "Google Sign-In failed. Please try again.")
+            );
+          } finally {
+            setGoogleLoading(false);
+          }
+        },
+      });
+      window.google.accounts.id.renderButton(googleButtonRef.current, {
+        type: "standard",
+        theme: "outline",
+        size: "large",
+        text: "signin_with",
+        width: 360,
+      });
+    };
+
+    const existingScript = document.getElementById("google-identity-services");
+    if (existingScript) {
+      initialiseGoogleButton();
+      existingScript.addEventListener("load", initialiseGoogleButton);
+      return () => existingScript.removeEventListener("load", initialiseGoogleButton);
+    }
+
+    const script = document.createElement("script");
+    script.id = "google-identity-services";
+    script.src = "https://accounts.google.com/gsi/client";
+    script.async = true;
+    script.onload = initialiseGoogleButton;
+    document.head.appendChild(script);
+    return () => script.removeEventListener("load", initialiseGoogleButton);
+  }, []);
 
   async function handleLogin(e) {
     e.preventDefault();
@@ -38,23 +108,7 @@ export default function Login() {
     try {
       const res = await api.post("/api/login/", { username, password });
 
-      saveAuth({
-        access: res.data.access,
-        refresh: res.data.refresh,
-        user: res.data.user,
-        rememberMe,
-      });
-
-      if (res.data.user.role === "mechanic") {
-        nav("/mechanic");
-      } else if (res.data.user.role === "customer") {
-        nav("/customer");
-      } else if (res.data.user.is_staff) {
-        // Staff/admin accounts with no customer or mechanic role fall back to the admin panel.
-        nav("/admin");
-      } else {
-        nav("/customer");
-      }
+      finishLogin(res.data);
       
     } catch (error) {
       setErr(
@@ -125,6 +179,13 @@ export default function Login() {
               <button type="submit" className="authPrimaryBtn">
                 Sign in
               </button>
+
+              {import.meta.env.VITE_GOOGLE_CLIENT_ID && (
+                <>
+                  <div className="authDivider"><span>or</span></div>
+                  <div className={googleLoading ? "googleSignIn googleSignInLoading" : "googleSignIn"} ref={googleButtonRef} />
+                </>
+              )}
 
               <div className="simpleAuthBottom">
                 Don&apos;t have an account?{" "}
