@@ -15,10 +15,12 @@ def _parse_comma_list(value):
 class MechanicProfile(models.Model):
     user = models.OneToOneField(User, on_delete=models.CASCADE, related_name='mechanic_profile')
 
-    # Stored as a comma-separated list of ServiceRequest.PROBLEM_TYPE_CHOICES keys
+    # Stored as a comma-separated list of ServiceRequest.PROBLEM_TYPE_CHOICES keys,
+    # e.g. "tyre_puncture,battery_dead,towing".
     skills = models.TextField()
 
-    # Stored as a comma-separated list of ServiceRequest.VEHICLE_TYPE_CHOICES keys
+    # Stored as a comma-separated list of ServiceRequest.VEHICLE_TYPE_CHOICES keys,
+    # e.g. "car,van".
     vehicle_types = models.TextField(blank=True, default="")
 
     latitude = models.FloatField(null=True, blank=True)
@@ -26,7 +28,6 @@ class MechanicProfile(models.Model):
     availability = models.BooleanField(default=True)
     rating = models.FloatField(default=0.0)
     created_at = models.DateTimeField(auto_now_add=True)
-    updated_at = models.DateTimeField(auto_now=True)
     updated_at = models.DateTimeField(auto_now=True)
 
     def __str__(self):
@@ -39,13 +40,7 @@ class MechanicProfile(models.Model):
         return _parse_comma_list(self.vehicle_types)
 
     def _matched(self, stored_list, valid_values):
-        """Intersection of a stored comma-list with a known-valid set.
-
-        Old/unrecognised stored values (e.g. free text from before this
-        feature existed) won't match any valid slug at all - in that case we
-        treat the mechanic as having nothing configured yet, so matching
-        falls back to showing everything until they update their profile.
-        """
+        """Intersection of a stored comma-list with a known-valid set."""
         return set(stored_list) & set(valid_values)
 
     def matched_skills(self, valid_skills):

@@ -2,7 +2,6 @@ from django.contrib import admin
 from .models import MechanicProfile
 
 
-@admin.register(MechanicProfile)  # Register the MechanicProfile model with the Django admin panel
 @admin.register(MechanicProfile)
 class MechanicProfileAdmin(admin.ModelAdmin):
     list_display = (

@@ -39,16 +39,31 @@ export default function Login() {
   }, [rememberMe]);
 
   function finishLogin(data) {
+    const userData = data.user || data;
+
     saveAuth({
-      access: data.access,
+      access: data.access || data.token,
       refresh: data.refresh,
-      user: data.user,
+      user: userData,
       rememberMe: rememberMeRef.current,
     });
 
-    if (data.user.role === "mechanic") nav("/mechanic");
-    else if (data.user.is_staff) nav("/admin");
-    else nav("/customer");
+    const userRole = (userData?.role || "").toLowerCase();
+    const isAdminOrStaff =
+      userData?.is_staff === true ||
+      userData?.is_superuser === true ||
+      userRole === "admin" ||
+      userRole === "staff";
+
+    if (userRole === "mechanic") {
+      nav("/mechanic");
+    } else if (userRole === "customer") {
+      nav("/customer");
+    } else if (isAdminOrStaff) {
+      nav("/admin");
+    } else {
+      nav("/customer");
+    }
   }
 
   useEffect(() => {
@@ -106,10 +121,8 @@ export default function Login() {
     setErr("");
 
     try {
-      const res = await api.post("/api/login/", { username, password });
-
+      const res = await api.post("/login/", { username, password });
       finishLogin(res.data);
-      
     } catch (error) {
       setErr(
         getApiErrorMessage(
