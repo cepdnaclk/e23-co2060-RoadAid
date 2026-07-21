@@ -1,6 +1,7 @@
 import { useEffect, useMemo, useRef, useState } from "react";
 import { useNavigate, useLocation } from "react-router-dom";
 import { clearAuth, getAuth } from "../auth";
+import RoadAidLogo from "./RoadAidLogo";
 
 export default function Navbar() {
   const nav = useNavigate();
@@ -60,7 +61,8 @@ export default function Navbar() {
     <header className="siteNavWrap">
       <div className="siteNav">
         <button className="brandLogoText" onClick={() => nav("/")}>
-          RoadAid
+          <RoadAidLogo className="navBrandMark" />
+          <span>RoadAid</span>
         </button>
 
         <nav className="siteNavLinks">

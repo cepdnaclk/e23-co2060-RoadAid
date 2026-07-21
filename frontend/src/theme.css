@@ -1104,10 +1104,30 @@ details summary{
   border: none;
   background: transparent;
   color: #111827;
+  display: inline-flex;
+  align-items: center;
+  gap: 9px;
   font-size: 28px;
   font-weight: 900;
   letter-spacing: -0.02em;
   cursor: pointer;
+}
+
+.navBrandMark{
+  width: 38px;
+  height: 38px;
+  flex: 0 0 38px;
+  display: grid;
+  place-items: center;
+  border-radius: 12px;
+  background: linear-gradient(145deg, #172947 0%, #0f1d35 100%);
+  border: 1px solid #243b61;
+  box-shadow: 0 5px 12px rgba(15, 29, 53, 0.18);
+}
+
+.navBrandMark svg{
+  width: 32px;
+  height: 32px;
 }
 
 .siteNavLinks{
