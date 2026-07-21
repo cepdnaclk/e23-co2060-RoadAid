@@ -121,7 +121,7 @@ export default function Login() {
     setErr("");
 
     try {
-      const res = await api.post("/login/", { username, password });
+      const res = await api.post("/api/login/", { username, password });
       finishLogin(res.data);
     } catch (error) {
       setErr(

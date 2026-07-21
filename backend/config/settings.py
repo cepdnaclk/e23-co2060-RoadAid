@@ -129,10 +129,7 @@ AUTH_USER_MODEL = "users.User"
 # Keep the actual value in backend/.env, never in source control.
 GOOGLE_OAUTH2_CLIENT_ID = os.getenv("GOOGLE_OAUTH2_CLIENT_ID", "").strip()
 
-CORS_ALLOWED_ORIGINS = env_list(
-    "CORS_ALLOWED_ORIGINS",
-    "http://localhost:5173,http://127.0.0.1:5173,https://cepdnaclk.github.io",
-)
+CORS_ALLOWED_ORIGINS = True
 
 REST_FRAMEWORK = {
     "DEFAULT_AUTHENTICATION_CLASSES": (
