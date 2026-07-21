@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { api } from "../api";
+import { PROBLEM_OPTIONS, VEHICLE_OPTIONS } from "../utils/problemTypes";
 
 function getApiErrorMessage(error, fallback) {
   const data = error?.response?.data;
@@ -29,15 +30,38 @@ export default function MechanicSignup() {
   const [fullName, setFullName] = useState("");
   const [email, setEmail] = useState("");
   const [phone, setPhone] = useState("");
-  const [skills, setSkills] = useState("");
+  const [skills, setSkills] = useState([]);
+  const [vehicleTypes, setVehicleTypes] = useState([]);
   const [password, setPassword] = useState("");
   const [err, setErr] = useState("");
   const [msg, setMsg] = useState("");
+
+  function toggleSkill(value) {
+    setSkills((prev) =>
+      prev.includes(value) ? prev.filter((v) => v !== value) : [...prev, value]
+    );
+  }
+
+  function toggleVehicleType(value) {
+    setVehicleTypes((prev) =>
+      prev.includes(value) ? prev.filter((v) => v !== value) : [...prev, value]
+    );
+  }
 
   async function handleSubmit(e) {
     e.preventDefault();
     setErr("");
     setMsg("");
+
+    if (skills.length === 0) {
+      setErr("Please select at least one type of job you can handle.");
+      return;
+    }
+
+    if (vehicleTypes.length === 0) {
+      setErr("Please select at least one vehicle type you can service.");
+      return;
+    }
 
     try {
       await api.post("/api/register/mechanic/", {
@@ -46,6 +70,7 @@ export default function MechanicSignup() {
         email,
         phone,
         skills,
+        vehicle_types: vehicleTypes,
         password,
       });
 
@@ -93,15 +118,59 @@ export default function MechanicSignup() {
               </div>
 
               <div className="simpleAuthField">
-                <label>Skills / services</label>
-                <textarea
-                  className="input inputWide"
-                  rows={4}
-                  value={skills}
-                  onChange={(e) => setSkills(e.target.value)}
-                  placeholder="Tyre puncture, battery, towing, engine work..."
-                  required
-                />
+                <label>Jobs you can handle</label>
+                <p className="hint" style={{ marginTop: 0, marginBottom: 8 }}>
+                  Select every problem type you're able to repair. Customers with these
+                  problems are the only ones who'll see your accepted requests match you.
+                </p>
+                <div className="row" style={{ flexWrap: "wrap", gap: 8 }}>
+                  {PROBLEM_OPTIONS.map((item) => (
+                    <label
+                      key={item.value}
+                      className="rememberCheck"
+                      style={{
+                        border: "1px solid rgba(17,24,39,0.15)",
+                        borderRadius: 8,
+                        padding: "6px 10px",
+                      }}
+                    >
+                      <input
+                        type="checkbox"
+                        checked={skills.includes(item.value)}
+                        onChange={() => toggleSkill(item.value)}
+                      />
+                      <span>{item.label}</span>
+                    </label>
+                  ))}
+                </div>
+              </div>
+
+              <div className="simpleAuthField">
+                <label>Vehicle types you can service</label>
+                <p className="hint" style={{ marginTop: 0, marginBottom: 8 }}>
+                  Only customers with these vehicle types will show up in your Jobs tab -
+                  like a tuk-tuk mechanic not being shown truck jobs.
+                </p>
+                <div className="row" style={{ flexWrap: "wrap", gap: 8 }}>
+                  {VEHICLE_OPTIONS.map((item) => (
+                    <label
+                      key={item.value}
+                      className="rememberCheck"
+                      style={{
+                        border: "1px solid rgba(17,24,39,0.15)",
+                        borderRadius: 8,
+                        padding: "6px 10px",
+                      }}
+                    >
+                      <input
+                        type="checkbox"
+                        checked={vehicleTypes.includes(item.value)}
+                        onChange={() => toggleVehicleType(item.value)}
+                      />
+                      <span>{item.label}</span>
+                    </label>
+                  ))}
+                </div>
               </div>
 
               <div className="simpleAuthField">

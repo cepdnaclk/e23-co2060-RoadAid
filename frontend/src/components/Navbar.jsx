@@ -189,7 +189,13 @@ export default function Navbar() {
                       <button className="profileDropdownItem" onClick={closeMenuNow}>
                         Reports
                       </button>
-                      <button className="profileDropdownItem" onClick={closeMenuNow}>
+                      <button
+                        className="profileDropdownItem"
+                        onClick={() => {
+                          closeMenuNow();
+                          nav("/mechanic/settings");
+                        }}
+                      >
                         Settings
                       </button>
                     </>

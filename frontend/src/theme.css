@@ -82,12 +82,52 @@ body{
 .logo{
   width: 46px;
   height: 46px;
+  flex: 0 0 46px;
   border-radius: 16px;
-  background: linear-gradient(145deg, #ffffff 0%, #f2f4f7 100%);
-  border: 1px solid var(--border);
+  display: grid;
+  place-items: center;
+  background: linear-gradient(145deg, #172947 0%, #0f1d35 100%);
+  border: 1px solid #243b61;
   box-shadow:
-    0 8px 20px rgba(17,24,39,0.06),
-    inset 0 1px 0 rgba(255,255,255,0.8);
+    0 8px 20px rgba(15, 29, 53, 0.2),
+    inset 0 1px 0 rgba(255,255,255,0.14);
+}
+
+.logo svg{
+  width: 38px;
+  height: 38px;
+  overflow: visible;
+}
+
+.roadAidRoad{
+  fill: none;
+  stroke: #42c3b2;
+  stroke-width: 2.5;
+  stroke-linecap: round;
+}
+
+.roadAidCar{
+  fill: #ffffff;
+  stroke: #ffffff;
+  stroke-width: 1.5;
+  stroke-linejoin: round;
+}
+
+.roadAidWheel{
+  fill: #0f1d35;
+  stroke: #ffffff;
+  stroke-width: 1.5;
+}
+
+.roadAidBeacon{
+  fill: #f7b733;
+}
+
+.roadAidRay{
+  fill: none;
+  stroke: #f7b733;
+  stroke-width: 2;
+  stroke-linecap: round;
 }
 
 .brandText{

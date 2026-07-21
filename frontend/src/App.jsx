@@ -6,14 +6,25 @@ import MechanicSignup from "./pages/MechanicSignup";
 import ForgotPassword from "./pages/ForgotPassword";
 import CustomerDashboard from "./pages/CustomerDashboard";
 import MechanicDashboard from "./pages/MechanicDashboard";
+import MechanicSettings from "./pages/MechanicSettings";
 import CustomerHistory from "./pages/CustomerHistory";
 import MechanicHistory from "./pages/MechanicHistory";
+import AdminDashboard from "./pages/AdminDashboard";
+import AdminUsers from "./pages/AdminUsers";
+import AdminRequests from "./pages/AdminRequests";
 import { getAuth } from "./auth";
 
 function RequireRole({ role, children }) {
   const auth = getAuth();
   if (!auth.token) return <Navigate to="/login" replace />;
   if (auth.role && auth.role !== role) return <Navigate to="/login" replace />;
+  return children;
+}
+
+function RequireStaff({ children }) {
+  const auth = getAuth();
+  if (!auth.token) return <Navigate to="/login" replace />;
+  if (!auth.isStaff) return <Navigate to="/login" replace />;
   return children;
 }
 
@@ -60,6 +71,42 @@ export default function App() {
             <RequireRole role="mechanic">
               <MechanicHistory />
             </RequireRole>
+          }
+        />
+
+        <Route
+          path="/mechanic/settings"
+          element={
+            <RequireRole role="mechanic">
+              <MechanicSettings />
+            </RequireRole>
+          }
+        />
+
+        <Route
+          path="/admin"
+          element={
+            <RequireStaff>
+              <AdminDashboard />
+            </RequireStaff>
+          }
+        />
+
+        <Route
+          path="/admin/users"
+          element={
+            <RequireStaff>
+              <AdminUsers />
+            </RequireStaff>
+          }
+        />
+
+        <Route
+          path="/admin/requests"
+          element={
+            <RequireStaff>
+              <AdminRequests />
+            </RequireStaff>
           }
         />
 

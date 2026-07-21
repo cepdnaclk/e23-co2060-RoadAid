@@ -39,6 +39,7 @@ INSTALLED_APPS = [
     "users",
     "requests",
     "mechanics",
+    "adminpanel",
 ]
 
 MIDDLEWARE = [

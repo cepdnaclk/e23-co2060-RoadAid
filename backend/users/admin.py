@@ -3,6 +3,30 @@ from django.contrib.auth.admin import UserAdmin as BaseUserAdmin
 from .models import User
 
 
+@admin.action(description="Approve selected mechanics")
+def approve_mechanics(modeladmin, request, queryset):
+    updated = queryset.filter(role="mechanic").update(approval_status="approved")
+    modeladmin.message_user(request, f"Approved {updated} mechanic account(s).")
+
+
+@admin.action(description="Reject selected mechanics")
+def reject_mechanics(modeladmin, request, queryset):
+    updated = queryset.filter(role="mechanic").update(approval_status="rejected")
+    modeladmin.message_user(request, f"Rejected {updated} mechanic account(s).")
+
+
+@admin.action(description="Suspend selected users")
+def suspend_users(modeladmin, request, queryset):
+    updated = queryset.exclude(id=request.user.id).update(is_active=False)
+    modeladmin.message_user(request, f"Suspended {updated} account(s).")
+
+
+@admin.action(description="Reactivate selected users")
+def reactivate_users(modeladmin, request, queryset):
+    updated = queryset.update(is_active=True)
+    modeladmin.message_user(request, f"Reactivated {updated} account(s).")
+
+
 @admin.register(User)
 class UserAdmin(BaseUserAdmin):
     list_display = (
@@ -13,6 +37,7 @@ class UserAdmin(BaseUserAdmin):
         "phone",
         "role",
         "approval_status",
+        "is_active",
         "is_staff",
         "is_superuser",
     )
@@ -27,6 +52,7 @@ class UserAdmin(BaseUserAdmin):
 
     search_fields = ("username", "email", "full_name", "phone")
     ordering = ("-id",)
+    actions = [approve_mechanics, reject_mechanics, suspend_users, reactivate_users]
 
     fieldsets = BaseUserAdmin.fieldsets + (
         (

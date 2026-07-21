@@ -2,6 +2,7 @@ import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { api } from "../api";
 import { getAuth } from "../auth";
+import RoadAidLogo from "../components/RoadAidLogo";
 
 function formatDate(value) {
   if (!value) return "-";
@@ -121,7 +122,7 @@ export default function CustomerHistory() {
       <div className="shell">
         <div className="topbar">
           <div className="brand">
-            <div className="logo" />
+            <RoadAidLogo />
             <div className="brandText">
               <h1>RoadAid</h1>
               <p>Customer service history</p>
