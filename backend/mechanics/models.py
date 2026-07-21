@@ -13,35 +13,20 @@ def _parse_comma_list(value):
 
 
 class MechanicProfile(models.Model):
-<<<<<<< HEAD
     user = models.OneToOneField(User, on_delete=models.CASCADE, related_name='mechanic_profile')
 
-    # Stored as a comma-separated list of ServiceRequest.PROBLEM_TYPE_CHOICES keys,
-    # e.g. "tyre_puncture,battery_dead,towing". Kept as a TextField (not a new model/
-    # migration) so existing data and the DB schema don't need to change.
+    # Stored as a comma-separated list of ServiceRequest.PROBLEM_TYPE_CHOICES keys
     skills = models.TextField()
 
-    # Stored as a comma-separated list of ServiceRequest.VEHICLE_TYPE_CHOICES keys,
-    # e.g. "car,van". Lets a tuk-tuk mechanic avoid being shown truck jobs, and
-    # vice versa - similar to how ride-hailing apps only match a driver's vehicle
-    # category to compatible ride requests.
+    # Stored as a comma-separated list of ServiceRequest.VEHICLE_TYPE_CHOICES keys
     vehicle_types = models.TextField(blank=True, default="")
 
     latitude = models.FloatField(null=True, blank=True)
-    longitude = models.FloatField(null=True, blank= True)
+    longitude = models.FloatField(null=True, blank=True)
     availability = models.BooleanField(default=True)
     rating = models.FloatField(default=0.0)
     created_at = models.DateTimeField(auto_now_add=True)
-=======
-    user = models.OneToOneField(User, on_delete=models.CASCADE, related_name='mechanic_profile') # One-to-one link to the User model; deleting the user removes the profile too
-    skills =models.TextField() # showcasing the mechanic's skills
-    latitude = models.FloatField(null=True, blank=True) #GPS coordinates for locating the mechanic
-    longitude = models.FloatField(null=True, blank= True) # This is optional until  mechanic sets their location 
-    availability = models.BooleanField(default=True) # whether the mechanic is currently accepting job requests
-    rating = models.FloatField(default=0.0) # avarage customer rating
-    created_at = models.DateTimeField(auto_now_add=True) # Automatically recorded timestamps
->>>>>>> 92ba1d3cdfa6749bba422bab3a3a7ff1ab9a6620
-    updated_at = models.DateTimeField(auto_now= True)
+    updated_at = models.DateTimeField(auto_now=True)
 
     def __str__(self):
         return f"{self.user.username} - Mechanic Profile"
